@@ -216,10 +216,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("contactForm");
+
+    if (!form) {
+        console.log("Contact form not found.");
+        return;
+    }
 
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
@@ -227,15 +231,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const formData = new FormData(form);
         formData.append("access_key", "c4f8e5f4-53bf-4677-bf85-d07eb9011afa");
 
-        const response = await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            body: formData
-        });
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+            });
 
-        if (response.ok) {
-            showSuccess();
-            form.reset();
-        } else {
+            const result = await response.json();
+
+            if (result.success) {
+                showSuccess();
+                form.reset();
+            } else {
+                alert("Submission failed. Please try again.");
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
             alert("Something went wrong. Please try again.");
         }
     });
@@ -244,22 +256,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function showSuccess() {
     const overlay = document.getElementById("successOverlay");
-    overlay.style.display = "flex";
+    if (overlay) {
+        overlay.style.display = "flex";
 
-    setTimeout(() => {
-        overlay.style.display = "none";
-    }, 4000);
+        setTimeout(() => {
+            overlay.style.display = "none";
+        }, 4000);
+    }
 }
 
 function closeSuccess() {
-    document.getElementById("successOverlay").style.display = "none";
+    const overlay = document.getElementById("successOverlay");
+    if (overlay) {
+        overlay.style.display = "none";
+    }
 }
-
-
-
-
-
-
-
-
 
